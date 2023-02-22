@@ -29,7 +29,7 @@ class P2bMessage(Message):
     self.ballot_number = ballot_number
     self.slot_number = slot_number
 
-class AdoptFailure(Message):
+class PreemptedMessage(Message):
   def __init__(self, src, ballot_number):
     Message.__init__(self, src)
     self.ballot_number = ballot_number

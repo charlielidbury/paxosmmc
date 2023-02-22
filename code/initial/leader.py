@@ -2,7 +2,7 @@ from utils import BallotNumber
 from process import Process
 from commander import Commander
 from scout import Scout
-from message import ProposeMessage,AdoptSuccess,AdoptFailure
+from message import ProposeMessage,AdoptSuccess,PreemptedMessage
 
 class Leader(Process):
   def __init__(self, env, id, config):
@@ -79,7 +79,7 @@ class Leader(Process):
         
         # Otherwise, the ballot number was old, ignore the adoption
 
-      elif isinstance(msg, AdoptFailure):
+      elif isinstance(msg, PreemptedMessage):
         # This should be an assertion
         if msg.ballot_number > self.ballot_number:
 

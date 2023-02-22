@@ -1,5 +1,5 @@
 from process import Process
-from message import P1aMessage,P1bMessage,AdoptFailure,AdoptSuccess
+from message import P1aMessage,P1bMessage,PreemptedMessage,AdoptSuccess
 
 class Scout(Process):
   def __init__(self, env, id, leader, acceptors, ballot_number):
@@ -45,7 +45,7 @@ class Scout(Process):
           # Preempt the leader and kill this scout process
           self.sendMessage(
             self.leader,
-            AdoptFailure(
+            PreemptedMessage(
               self.id,
               msg.ballot_number
             )

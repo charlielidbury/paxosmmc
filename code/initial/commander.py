@@ -1,4 +1,4 @@
-from message import P2aMessage,P2bMessage,AdoptFailure,DecisionMessage
+from message import P2aMessage,P2bMessage,PreemptedMessage,DecisionMessage
 from process import Process
 from utils import Command
 
@@ -35,17 +35,30 @@ class Commander(Process):
     while True:
       msg = self.getNextMessage()
       if isinstance(msg, P2bMessage):
+
         if self.ballot_number == msg.ballot_number and msg.src in waitfor:
           waitfor.remove(msg.src)
-          if len(waitfor) < float(len(self.acceptors))/2:
-            for r in self.replicas:
-              self.sendMessage(r, DecisionMessage(self.id,
-                                                  self.slot_number,
-                                                  self.command))
+
+          if len(waitfor) < float(len(self.acceptors)) / 2:
+            for replica in self.replicas:
+              self.sendMessage(
+                replica, 
+                DecisionMessage(
+                  self.id,
+                  self.slot_number,
+                  self.command
+                )
+              )
+
             return
         else:
-          self.sendMessage(self.leader, AdoptFailure(self.id,
-                                                         msg.ballot_number))
+          self.sendMessage(
+            self.leader, 
+            PreemptedMessage(
+              self.id,
+              msg.ballot_number
+            )
+          )
           return
 
 
