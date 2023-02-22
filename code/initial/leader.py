@@ -35,7 +35,7 @@ class Leader(Process):
           # Insert the command into the proposals dict
           self.proposals[msg.slot_number] = msg.command
 
-          # If we're in the active state, spawn a commander
+          # If we don't have a majority of acceptors, we can't spawn a commander
           if self.active:
             Commander(
               self.env,

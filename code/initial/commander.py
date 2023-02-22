@@ -1,4 +1,4 @@
-from message import P2aMessage,P2bMessage,PreemptedMessage,DecisionMessage
+from message import CommandRequest,CommandResponse,PreemptedMessage,DecisionNotification
 from process import Process
 from utils import Command
 
@@ -22,7 +22,7 @@ class Commander(Process):
     for acceptor in self.acceptors:
       self.sendMessage(
         acceptor, 
-        P2aMessage(
+        CommandRequest(
           self.id, 
           self.ballot_number,
           self.slot_number, 
@@ -34,16 +34,17 @@ class Commander(Process):
 
     while True:
       msg = self.getNextMessage()
-      if isinstance(msg, P2bMessage):
+      if isinstance(msg, CommandResponse):
 
         if self.ballot_number == msg.ballot_number and msg.src in waitfor:
           waitfor.remove(msg.src)
 
+          # If we have a majority of acceptors, the decision has been made, alert replicas
           if len(waitfor) < float(len(self.acceptors)) / 2:
             for replica in self.replicas:
               self.sendMessage(
                 replica, 
-                DecisionMessage(
+                DecisionNotification(
                   self.id,
                   self.slot_number,
                   self.command

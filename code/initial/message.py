@@ -5,25 +5,25 @@ class Message:
   def __str__(self):
     return str(self.__dict__)
 
-class P1aMessage(Message):
+class BallotRequest(Message):
   def __init__(self, src, ballot_number):
     Message.__init__(self, src)
     self.ballot_number = ballot_number
 
-class P1bMessage(Message):
+class BallotResponse(Message):
   def __init__(self, src, ballot_number, accepted):
     Message.__init__(self, src)
     self.ballot_number = ballot_number
     self.accepted = accepted
 
-class P2aMessage(Message):
+class CommandRequest(Message):
   def __init__(self, src, ballot_number, slot_number, command):
     Message.__init__(self, src)
     self.ballot_number = ballot_number
     self.slot_number = slot_number
     self.command = command
 
-class P2bMessage(Message):
+class CommandResponse(Message):
   def __init__(self, src, ballot_number, slot_number):
     Message.__init__(self, src)
     self.ballot_number = ballot_number
@@ -40,7 +40,7 @@ class AdoptSuccess(Message):
     self.ballot_number = ballot_number
     self.accepted = accepted
 
-class DecisionMessage(Message):
+class DecisionNotification(Message):
   def __init__(self, src, slot_number, command):
     Message.__init__(self, src)
     self.slot_number = slot_number

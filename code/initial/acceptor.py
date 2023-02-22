@@ -1,6 +1,6 @@
 from utils import PValue
 from process import Process
-from message import P1aMessage,P1bMessage,P2aMessage,P2bMessage
+from message import BallotRequest,BallotResponse,CommandRequest,CommandResponse
 
 class Acceptor(Process):
   def __init__(self, env, id):
@@ -13,7 +13,7 @@ class Acceptor(Process):
     print("Here I am: ", self.id)
     while True:
       msg = self.getNextMessage()
-      if isinstance(msg, P1aMessage):
+      if isinstance(msg, BallotRequest):
         # Received a P1a message
 
         if msg.ballot_number > self.ballot_number:
@@ -21,14 +21,16 @@ class Acceptor(Process):
 
         self.sendMessage(
           msg.src,
-          P1bMessage(
+          BallotResponse(
             self.id,
             self.ballot_number,
             self.accepted
           )
         )
-      elif isinstance(msg, P2aMessage):
+      elif isinstance(msg, CommandRequest):
         if msg.ballot_number == self.ballot_number:
+          # Accept the command
+
           self.accepted.add(
             PValue(
               msg.ballot_number,
@@ -37,9 +39,10 @@ class Acceptor(Process):
             )
           )
         
+        # Notify the commander of our 
         self.sendMessage(
           msg.src,
-          P2bMessage(
+          CommandResponse(
             self.id,
             self.ballot_number,
             msg.slot_number

@@ -1,5 +1,5 @@
 from process import Process
-from message import P1aMessage,P1bMessage,PreemptedMessage,AdoptSuccess
+from message import BallotRequest,BallotResponse,PreemptedMessage,AdoptSuccess
 
 class Scout(Process):
   def __init__(self, env, id, leader, acceptors, ballot_number):
@@ -13,16 +13,16 @@ class Scout(Process):
     # P1a messages only get sent to acceptors on initialization
     pendingAcceptors = set()
     for acceptor in self.acceptors:
-      self.sendMessage(acceptor, P1aMessage(self.id, self.ballot_number))
+      self.sendMessage(acceptor, BallotRequest(self.id, self.ballot_number))
       pendingAcceptors.add(acceptor)
 
     pvalues = set()
     while True:
       msg = self.getNextMessage()
-      if isinstance(msg, P1bMessage):
+      if isinstance(msg, BallotResponse):
         
         if self.ballot_number == msg.ballot_number and msg.src in pendingAcceptors:
-          # We received a P1b message from a pending acceptor for the current ballot number
+          # Ballot has been accepted
 
           pvalues.update(msg.accepted)
           pendingAcceptors.remove(msg.src)
@@ -39,8 +39,7 @@ class Scout(Process):
             )
             return
         else:
-          # We received a P1b message from either an acceptor that is
-          # not pending or has greater ballot number
+          # Ballot has been rejected by at least one acceptor
 
           # Preempt the leader and kill this scout process
           self.sendMessage(

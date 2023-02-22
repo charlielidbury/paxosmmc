@@ -1,5 +1,5 @@
 from process import Process
-from message import ProposeMessage,DecisionMessage,RequestMessage
+from message import ProposeMessage,DecisionNotification,RequestMessage
 from utils import *
 import time
 
@@ -44,7 +44,7 @@ class Replica(Process):
       msg = self.getNextMessage()
       if isinstance(msg, RequestMessage):
         self.requests.append(msg.command)
-      elif isinstance(msg, DecisionMessage):
+      elif isinstance(msg, DecisionNotification):
         self.decisions[msg.slot_number] = msg.command
         while self.slot_out in self.decisions:
           if self.slot_out in self.proposals:
