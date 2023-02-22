@@ -10,22 +10,38 @@ class Acceptor(Process):
     self.env.addProc(self)
 
   def body(self):
-    print "Here I am: ", self.id
+    print("Here I am: ", self.id)
     while True:
       msg = self.getNextMessage()
       if isinstance(msg, P1aMessage):
+        # Received a P1a message
+
         if msg.ballot_number > self.ballot_number:
           self.ballot_number = msg.ballot_number
-        self.sendMessage(msg.src,
-                         P1bMessage(self.id,
-                                    self.ballot_number,
-                                    self.accepted))
+
+        self.sendMessage(
+          msg.src,
+          P1bMessage(
+            self.id,
+            self.ballot_number,
+            self.accepted
+          )
+        )
       elif isinstance(msg, P2aMessage):
         if msg.ballot_number == self.ballot_number:
-          self.accepted.add(PValue(msg.ballot_number,
-                                   msg.slot_number,
-                                   msg.command))
-        self.sendMessage(msg.src,
-                         P2bMessage(self.id,
-                                    self.ballot_number,
-                                    msg.slot_number))
+          self.accepted.add(
+            PValue(
+              msg.ballot_number,
+              msg.slot_number,
+              msg.command
+            )
+          )
+        
+        self.sendMessage(
+          msg.src,
+          P2bMessage(
+            self.id,
+            self.ballot_number,
+            msg.slot_number
+          )
+        )
